@@ -1,0 +1,12 @@
+libsodium/src/libsodium/crypto_scalarmult/crypto_scalarmult.o: \
+ C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/crypto_scalarmult.c \
+ C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_scalarmult.h \
+ C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_scalarmult_curve25519.h \
+ C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/export.h
+
+C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_scalarmult.h:
+
+C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_scalarmult_curve25519.h:
+
+C:/ESP32/msys32/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/export.h:
+/home/Mauricio/esp/esp-idf/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/crypto_scalarmult.c:
