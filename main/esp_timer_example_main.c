@@ -11,10 +11,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <unistd.h>
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
-//#include "esp_event_loop.h"
+#include "esp_event_loop.h"
 #include "esp_event.h"
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
@@ -39,19 +40,10 @@
 
 #include "cJSON.h"
 
-
 #include "ESP32_ModbusRTU_Slave.h"
-/*
-#include "modbus_slave_esp32/defs.h"
-#include "modbus_slave_esp32/mb_config.h"
-#include "modbus_slave_esp32/mb_crc.h"
-#include "modbus_slave_esp32/mb_timer.h"
-#include "modbus_slave_esp32/mb_serial.h"
-#include "modbus_slave_esp32/mb_event.h"
-*/
 
 static const char* TAG = "example";
-volatile UCHAR MB_SLAVE_ADDRESS = 0X0A;
+volatile UCHAR MB_SLAVE_ADDRESS = 0X01;
 void mb_task(void *pvParameters); 
 
 /**
@@ -84,7 +76,7 @@ void mb_task(void *pvParameters)
     while(1)
     {
         MB();
-        vTaskDelay(1 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 

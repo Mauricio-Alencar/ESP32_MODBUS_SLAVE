@@ -52,6 +52,7 @@ MBTimerInit( void )
 
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
     ESP_LOGI(TAG, "TIMER CRIADO!");
+    
     MBTimerOff();
 
 	return TRUE;
@@ -62,7 +63,7 @@ BOOL
 MBTimerOff( void )
 {
     //para o timer
-    ESP_ERROR_CHECK(esp_timer_stop(periodic_timer));
+    esp_timer_stop(periodic_timer);
     ESP_LOGI(TAG, "TIMER OFF!");
     
 	return TRUE;

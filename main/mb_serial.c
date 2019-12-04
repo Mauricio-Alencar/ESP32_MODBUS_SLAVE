@@ -38,17 +38,18 @@ static void rx_task(void *arg)
 {
     static const char *RX_TASK_TAG = "RX_TASK";
     esp_log_level_set(RX_TASK_TAG, ESP_LOG_INFO);
-    uint8_t* data = (uint8_t*) pvPortMalloc(1);
+    uint8_t data[255];
     while (1) {
      
-     uart_read_bytes(EX_UART_NUM, data, 1, portMAX_DELAY);
+    uart_read_bytes(EX_UART_NUM, data, 1, portMAX_DELAY);
 
+    mb_buffer[mb_buffer_indice] = data;
+    mb_buffer_indice++;
+    
     if(mb_buffer_indice >= MB_BUFFER_SIZE)
             mb_buffer_indice = 0;
 
-
-    mb_buffer[mb_buffer_indice++] = data;
-    ESP_LOGI(RX_TASK_TAG, "Read: '%c'", mb_buffer[mb_buffer_indice]);
+    ESP_LOGI(RX_TASK_TAG, "Read: '%02X'", mb_buffer[mb_buffer_indice]);
     MBTimerRestart();
 
      /*
@@ -59,7 +60,6 @@ static void rx_task(void *arg)
 
     }
 
-    free(data);
     vTaskDelete(NULL);
 }
 

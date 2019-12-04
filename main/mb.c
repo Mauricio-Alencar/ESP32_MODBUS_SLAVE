@@ -377,7 +377,7 @@ BOOL MB( void )
 //função responsavel por inicializar a serial, interrupções globais e timer
 void MBInit( void )
 {
+    MBTimerInit();
     MBUartInit();
     //MBUartIE();
-    MBTimerInit();
 }

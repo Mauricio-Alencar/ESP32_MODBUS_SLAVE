@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/CMakeFiles/bootloader
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/CMakeFiles/bootloader.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/CMakeFiles/bootloader-complete.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/build/esp-idf/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule

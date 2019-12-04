@@ -14,12 +14,10 @@ BOOL
 MBEventPost( BOOL Event )
 {   //ENTER_CRITICAL_SECTION_MB( );
     MBUartRXDisable();
-    MBTimerOff();
 
     MBEventStatus = Event;
 
     MBUartRXEnable();
-    MBTimerOn();
     //EXIT_CRITICAL_SECTION_MB( );
     return TRUE;
 }
@@ -37,12 +35,10 @@ MBEventGet( void )
     BOOL MBEvent;
     // ENTER_CRITICAL_SECTION_MB( );
     MBUartRXDisable();
-    MBTimerOff();
 
     MBEvent =  MBEventStatus;
 
     MBUartRXEnable();
-    MBTimerOn();
     // EXIT_CRITICAL_SECTION_MB( );
       return MBEvent;
 }
