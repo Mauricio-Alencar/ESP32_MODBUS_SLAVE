@@ -74,7 +74,7 @@ BOOL
 MBTimerOn( void )
 {
    /* Inicia o timer */
-    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 5000));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 6000));
     ESP_LOGI(TAG, "TIMER ON!");
 
 	return TRUE;

@@ -1,0 +1,5 @@
+{
+    "files.associations": {
+        "esp32_modbusrtu_slave.h": "c"
+    }
+}
