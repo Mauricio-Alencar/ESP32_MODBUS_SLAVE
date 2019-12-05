@@ -1,1 +1,0 @@
-cmd='C:/ESP32/.espressif/tools/cmake/3.13.4/bin/cmake.exe;-DSDKCONFIG=C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave/sdkconfig;-DIDF_PATH=C:/ESP32/esp-idf;-DSECURE_BOOT_SIGNING_KEY=C:/ESP32/esp-idf/examples/projetos/esp_modbus_slave;-DEXTRA_COMPONENT_DIRS=C:/ESP32/esp-idf/components/bootloader;-GNinja;<SOURCE_DIR><SOURCE_SUBDIR>'
