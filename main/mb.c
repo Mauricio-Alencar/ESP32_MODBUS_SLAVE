@@ -6,6 +6,13 @@
 #include "defs.h"
 #include "ESP32_ModbusRTU_Slave.h"
 
+#include <stdio.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "esp_log.h"
+
 /* ----------------------- Variables----------------------------------------*/
 
 struct SMBException
@@ -14,6 +21,8 @@ struct SMBException
   UCHAR MBExceptionStatus;
   UCHAR MBExceptionCode;
 } sMBException;
+
+static const char *TAG = "MB_PROCESS";
 
 #ifdef MB_SLAVE 
 
@@ -33,7 +42,7 @@ MBSlaveEvent( void  )
     if(mb_buffer_indice > 0)
     {
         for(int i = 0; i <= sizeof(mb_buffer); i++){
-            ESP_LOGI(RX_TASK_TAG, "Read: '%.2X' Pos: %d", mb_buffer[i], i);
+            ESP_LOGI(TAG, "Read: '%.2X' Pos: %d", mb_buffer[i], i);
         }
         //verifica se o indice 0 do buffer é o endereço do slave.
         if( mb_buffer[0] == MB_SLAVE_ADDRESS )
