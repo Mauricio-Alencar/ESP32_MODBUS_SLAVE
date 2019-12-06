@@ -1,10 +1,37 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
 #include <string.h>
+#include <unistd.h>
+#include "esp_wifi.h"
+#include "esp_system.h"
+#include "nvs_flash.h"
+#include "esp_event_loop.h"
+#include "esp_event.h"
+#include "driver/uart.h"
+#include "soc/uart_struct.h"
+#include "string.h"
+#include "esp_timer.h"
+#include "esp_log.h"
+#include "esp_sleep.h"
+#include "sdkconfig.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include "freertos/queue.h"
-#include "driver/uart.h"
+#include "freertos/event_groups.h"
+
+#include "lwip/sockets.h"
+#include "lwip/dns.h"
+#include "lwip/netdb.h"
+
 #include "esp_log.h"
+#include "mqtt_client.h"
+
+#include "cJSON.h"
+
+#include "ESP32_ModbusRTU_Slave.h"
 
 #include "mb_config.h"
 #include "mb_serial.h"
@@ -28,36 +55,9 @@
 static const char *TAG = "MB_SERIAL";
     
 /* ----------------------- Variables ----------------------------------------*/
-static const int RX_BUF_SIZE = 1024;
-UCHAR mb_buffer[MB_BUFFER_SIZE];
-UCHAR mb_buffer_indice = 0;
-
+static const int RX_BUF_SIZE = 256;
 
 //vetores de interrupção da UART, em caso de uso para RTOS, tarefa com alimentação na recepção recepção serial.
-static void rx_task(void *arg)
-{
-    static const char *RX_TASK_TAG = "RX_TASK";
-    esp_log_level_set(RX_TASK_TAG, ESP_LOG_INFO);
-
-
-    uint8_t* data = (uint8_t*) pvPortMalloc(MB_BUFFER_SIZE);
-
-    while (1) {
-        
-    uart_read_bytes(EX_UART_NUM, data, 1, portMAX_DELAY);
-
-    mb_buffer[mb_buffer_indice] = (UCHAR) data;
-    mb_buffer_indice++;
-
-    if(mb_buffer_indice >= MB_BUFFER_SIZE)
-            mb_buffer_indice = 0;
-
-    //ESP_LOGI(RX_TASK_TAG, "Read: '%.2X'", mb_buffer[mb_buffer_indice]);
-    MBTimerRestart();
-    }
-    vPortFree(data);
-    vTaskDelete(NULL);
-}
 
 /*
 void 
@@ -98,7 +98,7 @@ MBUartInit( void )
     //Set UART pins (using UART0 default pins ie no changes.)
     uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, RTS_PIN, UART_PIN_NO_CHANGE);
     //Install UART driver, and get the queue.
-    uart_driver_install(UART_NUM_1, RX_BUF_SIZE * 2, 0, 0, NULL, 0);
+    uart_driver_install(UART_NUM_1, RX_BUF_SIZE, 0, 0, NULL, 0);
 
 #elif defined UART2 
 	/* Configure parameters of an UART driver,
@@ -115,11 +115,9 @@ MBUartInit( void )
     //Set UART pins (using UART0 default pins ie no changes.)
     uart_set_pin(UART_NUM_2, TXD_PIN, RXD_PIN, RTS_PIN, UART_PIN_NO_CHANGE);
     //Install UART driver, and get the queue.
-    uart_driver_install(UART_NUM_2, RX_BUF_SIZE * 2, 0, 0, NULL, 0);
+    uart_driver_install(UART_NUM_2, RX_BUF_SIZE, 0, 0, NULL, 0);
 
 #endif    
-
-    xTaskCreate(rx_task, "uart_rx_task", 1024*2, NULL, configMAX_PRIORITIES, NULL);
 
     return TRUE;
 } 
@@ -128,6 +126,7 @@ MBUartInit( void )
 void 
 MBUartRXEnable( void )
 {   
+	ESP_LOGI(TAG,"ATIVANDO SERIAL!");
     MBUartInit();
 	MBReceive_On_RS485(); 
 }
@@ -136,6 +135,7 @@ MBUartRXEnable( void )
 void 
 MBUartRXDisable( void )
 {
+	ESP_LOGI(TAG,"DESATIVANDO SERIAL!");
     uart_driver_delete(EX_UART_NUM);   
 	MBTransmit_On_RS485();
 }

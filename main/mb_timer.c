@@ -64,7 +64,7 @@ MBTimerOff( void )
 {
     //para o timer
     esp_timer_stop(periodic_timer);
-    ESP_LOGI(TAG, "TIMER OFF!");
+    //ESP_LOGI(TAG, "TIMER OFF!");
     
 	return TRUE;
 }
@@ -75,7 +75,7 @@ MBTimerOn( void )
 {
    /* Inicia o timer */
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 6000));
-    ESP_LOGI(TAG, "TIMER ON!");
+   // ESP_LOGI(TAG, "TIMER ON!");
 
 	return TRUE;
 }

@@ -45,6 +45,11 @@
 static const char* TAG = "example";
 volatile UCHAR MB_SLAVE_ADDRESS = 0X01;
 void mb_task(void *pvParameters); 
+void rx_task(void *arg);
+
+UCHAR mb_buffer[MB_BUFFER_SIZE];
+UCHAR mb_buffer_indice = 0;
+uint8_t data[1] = {0};
 
 /**
  * @brief      { Function 01 Modbus RTU RS485 Slave }
@@ -69,10 +74,17 @@ BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOf
     return TRUE;
 }
 
-void mb_task(void *pvParameters)
+
+
+void app_main()
 {
 	MBInit();
-	vTaskDelay(1000 / portTICK_PERIOD_MS);
+	xTaskCreate(rx_task, "uart_rx_task", 1024*4, NULL, configMAX_PRIORITIES, NULL);
+    xTaskCreate(mb_task, "mb_task", 1024*4, NULL, 2, NULL);
+} 
+
+void mb_task(void *pvParameters)
+{
     while(1)
     {
         MB();
@@ -80,10 +92,34 @@ void mb_task(void *pvParameters)
     }
 }
 
-void app_main()
+void rx_task(void *arg)
 {
-    xTaskCreate(mb_task, "mb_task", 1024*4, NULL, 2, NULL);
-} 
+
+    ESP_LOGI(TAG, "UART TASK CRIADA!");
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+    while(1) 
+    {
+      	//int len = uart_read_bytes(UART_NUM_1, data, 1, portMAX_DELAY);
+    	int len = uart_read_bytes(UART_NUM_1, data, 1, 500/portTICK_PERIOD_MS);
+
+      	if(len > 0)
+      	{
+
+		    mb_buffer[mb_buffer_indice] = data[0];
+		    mb_buffer_indice++;
+
+		    if(mb_buffer_indice >= MB_BUFFER_SIZE)
+		            mb_buffer_indice = 0;
+
+		    ESP_LOGI(TAG, "Read: '%.2X'", mb_buffer[mb_buffer_indice-1]);
+		    MBTimerRestart();
+		}
+    }
+    vTaskDelete(NULL);
+}
+
+
 
 /*
 

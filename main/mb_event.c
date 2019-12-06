@@ -34,11 +34,11 @@ MBEventGet( void )
 {
     BOOL MBEvent;
     // ENTER_CRITICAL_SECTION_MB( );
-    MBUartRXDisable();
+    //MBUartRXDisable();
 
     MBEvent =  MBEventStatus;
 
-    MBUartRXEnable();
+    //MBUartRXEnable();
     // EXIT_CRITICAL_SECTION_MB( );
       return MBEvent;
 }

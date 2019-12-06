@@ -38,12 +38,11 @@ MBSlaveEvent( void  )
     MBTimerOff();
     MBUartRXDisable();
 
+    ESP_LOGI(TAG, "evento de envio gerado!");
+
     //verifica se o indice do buffer tem conteudo
     if(mb_buffer_indice > 0)
     {
-        for(int i = 0; i <= sizeof(mb_buffer); i++){
-            ESP_LOGI(TAG, "Read: '%.2X' Pos: %d", mb_buffer[i], i);
-        }
         //verifica se o indice 0 do buffer é o endereço do slave.
         if( mb_buffer[0] == MB_SLAVE_ADDRESS )
         {
