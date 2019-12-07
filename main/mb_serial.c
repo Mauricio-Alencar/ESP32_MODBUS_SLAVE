@@ -6,7 +6,7 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
-#include "esp_event_loop.h"
+//#include "esp_event_loop.h"
 #include "esp_event.h"
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
@@ -53,11 +53,49 @@
 #endif
 
 static const char *TAG = "MB_SERIAL";
-    
+
+void rx_task(void *arg);
+
 /* ----------------------- Variables ----------------------------------------*/
 static const int RX_BUF_SIZE = 256;
 
+static EventGroupHandle_t RX_event_group;
+const int RX_BIT = BIT0;
+
+UCHAR mb_buffer[MB_BUFFER_SIZE];
+UCHAR mb_buffer_indice = 0;
+uint8_t data[1] = {0};
+
 //vetores de interrupção da UART, em caso de uso para RTOS, tarefa com alimentação na recepção recepção serial.
+void rx_task(void *arg)
+{
+
+    ESP_LOGI(TAG, "UART TASK CRIADA!");
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+    while(1) 
+    {
+        //Espera indefinidamente enquanto RX_BIT estiver bloqueando o uso da task
+        xEventGroupWaitBits(RX_event_group, RX_BIT, false, false, portMAX_DELAY);
+
+      	//int len = uart_read_bytes(UART_NUM_1, data, 1, portMAX_DELAY);
+    	int len = uart_read_bytes(UART_NUM_1, data, 1, 500/portTICK_PERIOD_MS);
+
+      	if(len > 0)
+      	{
+
+		    mb_buffer[mb_buffer_indice] = data[0];
+		    mb_buffer_indice++;
+
+		    if(mb_buffer_indice >= MB_BUFFER_SIZE)
+		            mb_buffer_indice = 0;
+
+		    ESP_LOGI(TAG, "Read: '%.2X'", mb_buffer[mb_buffer_indice-1]);
+		    MBTimerRestart();
+		}
+    }
+    vTaskDelete(NULL);
+}
 
 /*
 void 
@@ -119,6 +157,7 @@ MBUartInit( void )
 
 #endif    
 
+	xTaskCreate(rx_task, "uart_rx_task", 1024*2, NULL, configMAX_PRIORITIES, NULL);
     return TRUE;
 } 
 
@@ -127,7 +166,7 @@ void
 MBUartRXEnable( void )
 {   
 	ESP_LOGI(TAG,"ATIVANDO SERIAL!");
-    MBUartInit();
+    xEventGroupSetBits(RX_event_group, RX_BIT);
 	MBReceive_On_RS485(); 
 }
 
@@ -136,20 +175,22 @@ void
 MBUartRXDisable( void )
 {
 	ESP_LOGI(TAG,"DESATIVANDO SERIAL!");
-    uart_driver_delete(EX_UART_NUM);   
+    xEventGroupClearBits(RX_event_group, RX_BIT); 
 	MBTransmit_On_RS485();
 }
 
 //função para enviar um caracterer no barramento rs485
 void
-MBUartRxSend( UCHAR ch )
+MBUartRxSend( const char ch )
 {
 #if defined UART1
-    //while(!(UCSR0A & (1<<UDRE0)));
-    //UDR0 = ch;
+    //aguarda o envio de pacotes que estao sendo processados na serial.
+    ESP_ERROR_CHECK(uart_wait_tx_done(EX_UART_NUM, 100));
+    uart_write_bytes (EX_UART_NUM, &ch, 1); 
+
 #elif defined UART2 
-   // while(!(UCSR1A & (1<<UDRE1))); 
-   // UDR1 = ch;
+    ESP_ERROR_CHECK(uart_wait_tx_done(EX_UART_NUM, 100));
+    uart_write_bytes (EX_UART_NUM, &ch, 1);
 #endif      			
 }
 

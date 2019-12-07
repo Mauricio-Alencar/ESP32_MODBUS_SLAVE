@@ -205,7 +205,7 @@ MBSendToMasterException(  )
 
         for(i = 0; i < sizeof(frame); ++i)
         {
-              MBUartRxSend( frame[i] );
+              MBUartRxSend( ( const char ) frame[i] );
         }
 
         MBUartRXEnable();
@@ -246,7 +246,7 @@ MBSlaveFunc01ReadCoils(
 
         for(y = 0; y < 3 + i ; ++y)
         {
-            MBUartRxSend( frame[y] );
+            MBUartRxSend( (const char) frame[y] );
         }
 
         MBUartRXEnable();
@@ -287,7 +287,7 @@ MBSlaveFunc03ReadRegisters(
 
         for(y = 0; y < 3 + i ; ++y)
         {
-            MBUartRxSend( frame[y] );
+            MBUartRxSend( (const char) frame[y] );
         }
 
         MBUartRXEnable();
@@ -320,7 +320,7 @@ MBSlaveFunc06WriteSingleRegister(
 
         for(i = 0; i < sizeof(frame); ++i)
         {
-              MBUartRxSend( frame[i] );
+              MBUartRxSend( (const char) frame[i] );
         }
         
         MBUartRXEnable();
@@ -353,7 +353,7 @@ MBSlaveFunc16WriteMultipleRegisters(
 
         for(i = 0; i < sizeof(frame); ++i)
         {
-              MBUartRxSend( frame[i] );
+              MBUartRxSend( (const char) frame[i] );
         }
         
         MBUartRXEnable();
