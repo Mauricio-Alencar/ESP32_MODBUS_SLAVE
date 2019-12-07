@@ -36,7 +36,7 @@ MBSlaveEvent( void  )
 
     //desabilita timer e serial para tratar o evento de recepção, garantindo que nada irá modificar esse buffer
     MBTimerOff();
-    MBUartRXDisable();
+	MBUartRXDisable();
 
     ESP_LOGI(TAG, "evento de envio gerado!");
 
@@ -179,8 +179,8 @@ MBSlaveEvent( void  )
     }
 
     mb_buffer_indice = 0;
-    MBUartRXEnable();
-
+	MBUartRXEnable();
+	
     return Retorno;
 }
 
