@@ -44,6 +44,8 @@
 
 static const char* TAG = "MB_SAMPLE_COIL_REGISTER";
 
+#define DEBUG_ESP32     TRUE
+
 volatile UCHAR MB_SLAVE_ADDRESS = 0X01;
 void mb_task(void *pvParameters); 
 
@@ -59,13 +61,28 @@ void mb_task(void *pvParameters);
  */
 BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOfCoils )
 {  
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_READCOIL FUNCTION");
     switch( usStartAddress )
     {
-        case 1:
+        case 0:
                if( usNumberOfCoils > 0 ) {              
-                  ucCoils[0] = 0B10101010;
+                  ucCoils[0] = 0B01010101;
+                  ucCoils[1] = 0B00000001;
                }
                break;
+        case 1:
+               if( usNumberOfCoils > 0 ) { 
+                  ucCoils[0] = 0B11110000;
+                  ucCoils[1] = 0B00000001;
+               }
+               break;
+            default:
+            ESP_LOGI(TAG, "DEFAULT!");
+            ucCoils[0] = 0B11111111;
+            ucCoils[1] = 0B11111111;
+            ucCoils[2] = 0B11111111;
+            ucCoils[3] = 0B11111111;
+            break;
     }
 
     return TRUE;

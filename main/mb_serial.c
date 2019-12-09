@@ -44,7 +44,6 @@
 #define RXD_PIN (16)
 #define RTS_PIN (27)
 
-
 //uart num define
 #if defined UART1
 #define EX_UART_NUM UART_NUM_1
@@ -59,7 +58,7 @@ void rx_task(void *arg);
 /* ----------------------- Variables ----------------------------------------*/
 static const int RX_BUF_SIZE = 256;
 
-static EventGroupHandle_t RX_event_group;
+EventGroupHandle_t RX_event_group;
 const int RX_BIT = BIT0;
 
 UCHAR mb_buffer[MB_BUFFER_SIZE];
@@ -84,8 +83,7 @@ void rx_task(void *arg)
       	if(len > 0)
       	{
 
-		    mb_buffer[mb_buffer_indice] = data[0];
-		    mb_buffer_indice++;
+		    mb_buffer[mb_buffer_indice++] = data[0];
 
 		    if(mb_buffer_indice >= MB_BUFFER_SIZE)
 		            mb_buffer_indice = 0;
@@ -96,26 +94,6 @@ void rx_task(void *arg)
     }
     vTaskDelete(NULL);
 }
-
-/*
-void 
-MBUartIRQ( void )
-{  
-    //Verifica se o BUFFER esta cheio, caso esteja, ele zera o indice para recepcionar novos dados.
-    if(mb_buffer_indice >= MB_BUFFER_SIZE)
-			mb_buffer_indice = 0;
-    
-//Executa a recepção dos dados na UART alimentando um buffer de acordo com indice.
-#if defined UART1
-    while(!(UCSR0A & (1<<RXC0)));	  
-	mb_buffer[mb_buffer_indice++] = UDR0;
-    
-#elif defined UART2
-    while(!(UCSR1A & (1<<RXC1)));	  
-	mb_buffer[mb_buffer_indice++] = UDR1;
-#endif     
-}
-*/
 
 //função para inicialização da serial
 BOOL
@@ -155,7 +133,9 @@ MBUartInit( void )
     //Install UART driver, and get the queue.
     uart_driver_install(UART_NUM_2, RX_BUF_SIZE, 0, 0, NULL, 0);
 
-#endif    
+#endif   
+    RX_event_group = xEventGroupCreate();
+    xEventGroupSetBits(RX_event_group, RX_BIT);
 
 	xTaskCreate(rx_task, "uart_rx_task", 1024*2, NULL, configMAX_PRIORITIES, NULL);
     return TRUE;
@@ -187,7 +167,7 @@ MBUartRxSend( const char ch )
     //aguarda o envio de pacotes que estao sendo processados na serial.
     ESP_ERROR_CHECK(uart_wait_tx_done(EX_UART_NUM, 100));
     uart_write_bytes (EX_UART_NUM, &ch, 1); 
-
+    
 #elif defined UART2 
     ESP_ERROR_CHECK(uart_wait_tx_done(EX_UART_NUM, 100));
     uart_write_bytes (EX_UART_NUM, &ch, 1);
