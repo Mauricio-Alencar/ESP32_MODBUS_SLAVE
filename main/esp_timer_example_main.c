@@ -50,6 +50,7 @@ volatile UCHAR MB_SLAVE_ADDRESS = 0X01;
 void mb_task(void *pvParameters); 
 
 
+
 /**
  * @brief      { Function 01 Modbus RTU RS485 Slave }
  *
@@ -58,7 +59,10 @@ void mb_task(void *pvParameters);
  * @param[in]  usNumberOfCoils  The number of coils
  *
  * @return     { description_of_the_return_value }
+ * 
  */
+//descomentar função abaixo para utilizar-la
+/* 
 BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOfCoils )
 {  
     if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_READCOIL FUNCTION");
@@ -90,8 +94,38 @@ BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOf
 
     return TRUE;
 }
+*/
 
+/**
+ * @brief      { Function 03 Modbus RTU RS485 Slave }
+ *
+ * @param      wRegHoldingbuffer    buffer of hold registers
+ * @param[in]  usStartAddress   The start address
+ * @param[in]  usNumberOfRegisters  The number of registers
+ *
+ * @return     { description_of_the_return_value }
+ */
+//descomentar função abaixo para utilizar-la
+BOOL MBEventReadRegisters(USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters  )
+{
+    UCHAR i = 0;
+    USHORT contador1 = 0;
+    USHORT contador2 = 1000;
 
+    switch(usStartAddress)
+    {
+       case 5: contador1++;
+                wRegHoldingbuffer[i++] = (UCHAR) (contador1>>8);
+                wRegHoldingbuffer[i++] = (UCHAR) (contador1);
+                break;
+                
+       case 6: contador2++; 
+                wRegHoldingbuffer[i++] = (UCHAR) (contador2>>8);
+                wRegHoldingbuffer[i++] = (UCHAR) (contador2);
+                break;
+    }
+    return TRUE;
+}
 
 void app_main()
 {
@@ -108,28 +142,30 @@ void mb_task(void *pvParameters)
     }
 }
 
-
-
-
+void MBException( USHORT usExceptionCode ) {
+   return; 
+}
 
 /*
 
  Callback das Funções do Stack Modbus; 
  Para Habilitar ou desabilitar cada uma das funções individualmente, configure
- o arquivo mb_config.h em "C:\...\Documents\Arduino\libraries\ModbusRTU-RS485-Master\src".
- Caso as funções estejam habilitadas, mantenha a função de callback em seu programa.
+ o arquivo mb_config.h.
+ Caso as funções estejam habilitadas, mantenha a função de callback em seu programa e comentar apenas a que estiver usando acima.
 
 */
 
-void MBException( USHORT usExceptionCode ) {
-   return; 
+BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOfCoils )
+{  
+    return TRUE;
 }
 
-
+/*
 BOOL MBEventReadRegisters(USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters  )
 {
    return TRUE;
 }
+*/
 
 BOOL MBEventWriteSingleRegister( USHORT usStartAddress, USHORT  usValue )
 {
