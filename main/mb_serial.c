@@ -161,7 +161,7 @@ MBUartRXDisable( void )
 
 //função para enviar um caracterer no barramento rs485
 void
-MBUartRxSend( const char ch )
+MBUartTxSend( const char ch )
 {
 #if defined UART1
     //aguarda o envio de pacotes que estao sendo processados na serial.

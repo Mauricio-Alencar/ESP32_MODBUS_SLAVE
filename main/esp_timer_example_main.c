@@ -18,6 +18,7 @@
 //#include "esp_event_loop.h"
 #include "esp_event.h"
 #include "driver/uart.h"
+#include "driver/gpio.h"
 #include "soc/uart_struct.h"
 #include "string.h"
 #include "esp_timer.h"
@@ -106,23 +107,138 @@ BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOf
  * @return     { description_of_the_return_value }
  */
 //descomentar função abaixo para utilizar-la
+/*
 BOOL MBEventReadRegisters(USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters  )
 {
     UCHAR i = 0;
-    USHORT contador1 = 0;
-    USHORT contador2 = 1000;
+    static USHORT contador1 = 0;
+    static USHORT contador2 = 1000;
+
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_READREGISTER FUNCTION");
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "START ADDRES: '%d'", usStartAddress);
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "NUMBER OF registers: '%d'", usNumberOfRegisters);
 
     switch(usStartAddress)
     {
        case 5: contador1++;
-                wRegHoldingbuffer[i++] = (UCHAR) (contador1>>8);
                 wRegHoldingbuffer[i++] = (UCHAR) (contador1);
-                break;
+                wRegHoldingbuffer[i++] = (UCHAR) (contador1>>8);
+                
+                //break;
                 
        case 6: contador2++; 
-                wRegHoldingbuffer[i++] = (UCHAR) (contador2>>8);
+
                 wRegHoldingbuffer[i++] = (UCHAR) (contador2);
+                wRegHoldingbuffer[i++] = (UCHAR) (contador2>>8);
                 break;
+    }
+    return TRUE;
+}
+*/
+
+/**
+ * @brief      { Function 06 Modbus RTU RS485 Slave }
+ *
+ * 
+ * @param  usStartAddress   The start address
+ * @param  usValue  The value of the registers to master write
+ *
+ * @return     { description_of_the_return_value }
+ */
+//descomentar função abaixo para utilizar-la
+/*
+#define RELE    5
+#define GPIO_OUTPUT_PIN_SEL  (1ULL<<RELE) 
+BOOL MBEventWriteSingleRegister( USHORT usStartAddress, USHORT  usValue )
+{
+
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_SingleWriteREG FUNCTION");
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "START ADDRES: '%d'", usStartAddress);
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "VALUE: '%d'", usValue);
+
+
+    if(usStartAddress == 1)
+    {
+        gpio_config_t io_conf;
+        //disable interrupt
+        io_conf.intr_type = GPIO_PIN_INTR_DISABLE;
+        //set as output mode
+        io_conf.mode = GPIO_MODE_OUTPUT;
+        //bit mask para pino 5
+        io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+        //disable pull-down mode
+        io_conf.pull_down_en = 0;
+        //disable pull-up mode
+        io_conf.pull_up_en = 0;
+        //configure GPIO with the given settings
+        gpio_config(&io_conf);
+
+        
+        //Caso o valor do registrador 1 seja 1001, liga RELE1, caso contrário
+        //desliga;
+        
+        gpio_set_level(RELE, ((usValue == 1001)?1:0));  
+    }
+
+    return TRUE;
+    
+}
+*/
+
+/**
+ * @brief      { Function 16 Write Multiple Registers - ModbusRTU Slave}
+ *
+ * @param[in]  usStartAddress       The start address
+ * @param      wRegHoldingbuffer    The w register holdingbuffer
+ * @param[in]  usNumberOfRegisters  The number of registers
+ *
+ * @return     { true }
+ */
+//descomentar função abaixo para utilizar-la
+
+#define RELE    5
+#define GPIO_OUTPUT_PIN_SEL  (1ULL<<RELE)
+BOOL MBEventWriteMultipleRegisters( USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters )
+{
+    USHORT value;
+    USHORT i;
+
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_MultipleWriteREG FUNCTION");
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "START ADDRES: '%d'", usStartAddress);
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "NUMBER OF registers: '%d'", usNumberOfRegisters);
+
+    gpio_config_t io_conf;
+    //disable interrupt
+    io_conf.intr_type = GPIO_PIN_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask para pino 5
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    //disable pull-down mode
+    io_conf.pull_down_en = 0;
+    //disable pull-up mode
+    io_conf.pull_up_en = 0;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+
+    for( i = usStartAddress ; i < usStartAddress + usNumberOfRegisters; ++i)
+    {
+         if(i == 1)
+         {
+            if (DEBUG_ESP32) ESP_LOGI(TAG, "FUNC 16 REG 1");
+
+            value = (wRegHoldingbuffer[0] << 8) | wRegHoldingbuffer[1];
+            /**
+             * Caso o valor do registrador 1 seja 1001, liga RELE1, caso contrário
+             * desliga;
+             */
+            gpio_set_level(RELE, ((value == 1001)?1:0));  
+         }
+
+         if(i == 2)
+         {
+            if (DEBUG_ESP32) ESP_LOGI(TAG, "FUNC 16 REG 2");
+         }
     }
     return TRUE;
 }
@@ -160,19 +276,21 @@ BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOf
     return TRUE;
 }
 
-/*
+
 BOOL MBEventReadRegisters(USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters  )
 {
    return TRUE;
 }
-*/
+
 
 BOOL MBEventWriteSingleRegister( USHORT usStartAddress, USHORT  usValue )
 {
    return TRUE;
 }
+
+/*
 BOOL MBEventWriteMultipleRegisters( USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHORT  usNumberOfRegisters )
 {
   return TRUE;
 }
-
+*/

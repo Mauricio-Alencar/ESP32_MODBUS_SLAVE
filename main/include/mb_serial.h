@@ -11,7 +11,7 @@ void 	MBUartIRQ( void );
 BOOL 	MBUartInit( void );
 void 	MBUartRXEnable( void );
 void 	MBUartRXDisable( void );
-void 	MBUartRxSend( const char ch );
+void 	MBUartTxSend( const char ch );
 void 	MBUartIE( void );
 
 void    MBReceive_On_RS485( void );

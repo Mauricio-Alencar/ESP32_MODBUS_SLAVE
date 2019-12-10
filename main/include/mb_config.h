@@ -12,6 +12,7 @@
 extern volatile UCHAR MB_SLAVE_ADDRESS; 
 
 #define __ESP32__
+#define DEBUG_MB TRUE
 
 /* ----------------------- ENABLE FUNCTIONS-----------------------------------*/   
 
