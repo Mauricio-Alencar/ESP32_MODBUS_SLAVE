@@ -62,7 +62,6 @@ MBSlaveEvent( void  )
                     //concatena o indice 2 e 3 para pegar o endereço de inicio do protoclo modbus
                     USHORT usStartAddress = (mb_buffer[2] << 8)| mb_buffer[3];
 
-                    ESP_LOGI(TAG, "START ADDRES: '%.2X'", usStartAddress);
                     //concatena o indice 4 e 5 para pegar o endereço o numero de coils a serem lidos
                     USHORT usNumberOfCoils = (mb_buffer[4] << 8)| mb_buffer[5];
                     

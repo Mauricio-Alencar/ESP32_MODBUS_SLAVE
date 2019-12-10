@@ -62,6 +62,9 @@ void mb_task(void *pvParameters);
 BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOfCoils )
 {  
     if (DEBUG_ESP32) ESP_LOGI(TAG, "MB_READCOIL FUNCTION");
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "START ADDRES: '%d'", usStartAddress);
+    if (DEBUG_ESP32) ESP_LOGI(TAG, "NUMBER OF COILS: '%d'", usNumberOfCoils);
+
     switch( usStartAddress )
     {
         case 0:
