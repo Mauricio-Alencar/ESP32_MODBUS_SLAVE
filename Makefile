@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := esp_timer_example
+PROJECT_NAME := esp32_mb_slave_main
 
 include $(IDF_PATH)/make/project.mk
 

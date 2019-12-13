@@ -1,4 +1,4 @@
-set(COMPONENT_SRCS "esp_timer_example_main.c"
+set(COMPONENT_SRCS "esp32_mb_slave_main.c"
 		   "mb.c"
 		   "mb_crc.c"
 		   "mb_event.c"

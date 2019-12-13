@@ -1,3 +1,25 @@
+/*
+ * Autor: Maurício Alencar
+ * Exemplo de codigo main para uso da biblioteca Modbus RTU MASTER
+ * Site: coldpack.com.br
+ *
+ * Biblioteca Modbus RTU: MASTER
+ * Copyright (C) 2019 Coldpack Mechatronics Systems <mauricioalencarf@gmail.com.br>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+*/
+
 
 #ifndef __MB_CONFIG_H__
 #define __MB_CONFIG_H__
@@ -19,20 +41,17 @@ extern volatile UCHAR MB_SLAVE_ADDRESS;
 #if defined(__ESP32__)
     #define UART1
     //#define UART2 
-    //#define MB_RS485PIN_SET()   do{DDRE |= (1<<3); PORTE |= (1<<3);}while(0)
-    //#define MB_RS485PIN_RESET() do{DDRE |= (1<<3); PORTE &= ~(1<<3);}while(0)
+    
 
 #elif defined(__STM32__) 
     //#define UART0
     //#define UART1 
     #define UART2
-    #define MB_RS485PIN_SET()   do{DDRD |= (1<<6); PORTD |= (1<<6); /* DDRB |= (1<<5); PORTB |= (1<<5);*/}while(0)
-    #define MB_RS485PIN_RESET() do{DDRD |= (1<<6); PORTD &= ~(1<<6);/*DDRB |= (1<<5); PORTB &= ~(1<<5);*/}while(0)
 #endif
 
  /* ----------------------- PORT --------------------------------------------*/
 //#define __delay1ms()                _delay_ms(1) 
-#define TIMEOUT_1MS                  1
+#define TIMEOUT_1MS                      1
 //#define ENTER_CRITICAL_SECTION_MB()   cli() 
 //#define EXIT_CRITICAL_SECTION_MB()    sei() 
 

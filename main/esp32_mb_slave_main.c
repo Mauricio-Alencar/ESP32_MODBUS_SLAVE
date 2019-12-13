@@ -1,12 +1,26 @@
-/* esp_timer (high resolution timer) example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+/*
+ * Autor: Maurício Alencar
+ * Exemplo de codigo main para uso da biblioteca Modbus RTU MASTER
+ * Site: coldpack.com.br
+ *
+ * Biblioteca Modbus RTU: MASTER
+ * Copyright (C) 2019 Coldpack Mechatronics Systems <mauricioalencarf@gmail.com.br>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
 */
 
+/******************************* LIBRARYS *****************************/
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -43,15 +57,18 @@
 
 #include "ESP32_ModbusRTU_Slave.h"
 
-static const char* TAG = "MB_SAMPLE_COIL_REGISTER";
+/******************************* DEFINES *****************************/
+static const char* TAG = "MB_SLAVE_MAIN";
 
 #define DEBUG_ESP32     TRUE
 
 volatile UCHAR MB_SLAVE_ADDRESS = 0X01;
+
+/******************************* PROTOTIPOS *****************************/
 void mb_task(void *pvParameters); 
 
-
-
+/******************************* CALLBACK FUNCTIONS MODBUS *****************************/
+// ----------------------------------------------- CALL BACK FUNC CODE 01 ---------------------------------------------
 /**
  * @brief      { Function 01 Modbus RTU RS485 Slave }
  *
@@ -97,6 +114,7 @@ BOOL MBEventReadCoils(USHORT usStartAddress, UCHAR * ucCoils, USHORT  usNumberOf
 }
 */
 
+// ----------------------------------------------- CALL BACK FUNC CODE 03 ---------------------------------------------
 /**
  * @brief      { Function 03 Modbus RTU RS485 Slave }
  *
@@ -136,6 +154,7 @@ BOOL MBEventReadRegisters(USHORT usStartAddress, UCHAR * wRegHoldingbuffer, USHO
 }
 */
 
+// ----------------------------------------------- CALL BACK FUNC CODE 06 ---------------------------------------------
 /**
  * @brief      { Function 06 Modbus RTU RS485 Slave }
  *
@@ -185,6 +204,7 @@ BOOL MBEventWriteSingleRegister( USHORT usStartAddress, USHORT  usValue )
 }
 */
 
+// ----------------------------------------------- CALL BACK FUNC CODE 16 ---------------------------------------------
 /**
  * @brief      { Function 16 Write Multiple Registers - ModbusRTU Slave}
  *
@@ -243,12 +263,15 @@ BOOL MBEventWriteMultipleRegisters( USHORT usStartAddress, UCHAR * wRegHoldingbu
     return TRUE;
 }
 
+// -------------------------------------------- MAIN --------------------------------------------------------
 void app_main()
 {
 	MBInit();
     xTaskCreate(mb_task, "mb_task", 1024*4, NULL, 2, NULL);
 } 
+// ------------------------------------------- FIM MAIN ------------------------------------------------------
 
+// -------------------------------------------- TAREFAS ------------------------------------------------------
 void mb_task(void *pvParameters)
 {
     while(1)
@@ -257,13 +280,15 @@ void mb_task(void *pvParameters)
         vTaskDelay(200 / portTICK_PERIOD_MS);
     }
 }
+// ------------------------------------------ FIM TAREFAS ------------------------------------------------------
 
+// -------------------------------------------- EXCEPTION ------------------------------------------------------
 void MBException( USHORT usExceptionCode ) {
    return; 
 }
+// --------------------------------------- FIM EXCEPTION -------------------------------------------------------
 
 /*
-
  Callback das Funções do Stack Modbus; 
  Para Habilitar ou desabilitar cada uma das funções individualmente, configure
  o arquivo mb_config.h.
