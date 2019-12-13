@@ -22,4 +22,4 @@ Liberada sobre licença GNU de software livre.
 ## Documentação de uso (EM ANDAMENTO)
 
 ##
-- Todos os exemplos contidos em condigo main, assim como arquivos da biblioteca foram baseados nos ensinamentos do professor Mr. Fernando Simplício sobre protocolos e redes industriais.
+- Todos os exemplos contidos em condigo main, assim como arquivos da biblioteca foram baseados nos ensinamentos do professor Msc. Fernando Simplício sobre protocolos e redes industriais.
