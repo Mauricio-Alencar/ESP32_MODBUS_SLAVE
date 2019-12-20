@@ -31,19 +31,18 @@
 
 #include "cJSON.h"
 
-#include "ESP32_ModbusRTU_Slave.h"
-
 #include "mb_config.h"
 #include "mb_serial.h"
 #include "mb_timer.h"
 #include "mb_event.h"
 
 //Configuraçãop da uart em 9600 BPS
-#define BAUD 9600
-#define TXD_PIN (4)
-#define RXD_PIN (16)
-#define RTS_PIN (27)
+#define BAUD 					9600
+#define TXD_PIN 				(4)
+#define RXD_PIN 				(16)
 
+#define GPIO_CONTROL_RS485    	(27)
+#define GPIO_OUTPUT_PIN_SEL  (1ULL<<GPIO_CONTROL_RS485)
 //uart num define
 #if defined UART1
 #define EX_UART_NUM UART_NUM_1
@@ -112,7 +111,7 @@ MBUartInit( void )
     uart_param_config(UART_NUM_1, &uart_config);
 
     //Set UART pins (using UART0 default pins ie no changes.)
-    uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, RTS_PIN, UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     //Install UART driver, and get the queue.
     uart_driver_install(UART_NUM_1, RX_BUF_SIZE, 0, 0, NULL, 0);
 
@@ -129,11 +128,27 @@ MBUartInit( void )
     uart_param_config(UART_NUM_2, &uart_config);
 
     //Set UART pins (using UART0 default pins ie no changes.)
-    uart_set_pin(UART_NUM_2, TXD_PIN, RXD_PIN, RTS_PIN, UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_2, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     //Install UART driver, and get the queue.
     uart_driver_install(UART_NUM_2, RX_BUF_SIZE, 0, 0, NULL, 0);
 
-#endif   
+#endif
+
+    //configuração do pino de output para manipular o barramento rs485
+    gpio_config_t io_conf;
+    //disable interrupt
+    io_conf.intr_type = GPIO_PIN_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    //disable pull-down mode
+    io_conf.pull_down_en = 0;
+    //disable pull-up mode
+    io_conf.pull_up_en = 0;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+
     RX_event_group = xEventGroupCreate();
     xEventGroupSetBits(RX_event_group, RX_BIT);
 
@@ -185,7 +200,7 @@ MBUartIE( void )
 void 
 MBTransmit_On_RS485( void )
 {
-    uart_set_rts(EX_UART_NUM, TRUE); 
+    gpio_set_level(GPIO_CONTROL_RS485, TRUE); 
     vTaskDelay(5 / portTICK_PERIOD_MS);
 }
 
@@ -203,5 +218,5 @@ MBReceive_On_RS485( void )
     }
 
     vTaskDelay(5 / portTICK_PERIOD_MS);
-    uart_set_rts(EX_UART_NUM, FALSE);
+    gpio_set_level(GPIO_CONTROL_RS485, FALSE);
 }
